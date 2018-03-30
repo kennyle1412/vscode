@@ -120,6 +120,22 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 		this._selectLines(this._currentMarker, this._selectionStart);
 	}
 
+	public selectToPreviousLine(): void {
+		if (this._selectionStart === null) {
+			this._selectionStart = this._currentMarker;
+		}
+		this.scrollToPreviousCommand(ScrollPosition.Middle, true);
+		this._selectLines(this._currentMarker, this._selectionStart);
+	}
+
+	public selectToNextLine(): void {
+		if (this._selectionStart === null) {
+			this._selectionStart = this._currentMarker;
+		}
+		this.scrollToNextCommand(ScrollPosition.Middle, true);
+		this._selectLines(this._currentMarker, this._selectionStart);
+	}
+
 	private _selectLines(start: IMarker | Boundary, end: IMarker | Boundary | null): void {
 		if (end === null) {
 			end = Boundary.Bottom;
