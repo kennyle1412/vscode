@@ -24,6 +24,7 @@ export enum ScrollPosition {
 export class TerminalCommandTracker implements ITerminalCommandTracker {
 	private _currentMarker: IMarker | Boundary = Boundary.Bottom;
 	private _selectionStart: IMarker | Boundary | null = null;
+	private _lineNumber: number;
 
 	constructor(
 		private _xterm: Terminal
@@ -40,6 +41,7 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 		// bottom of the buffer
 		this._currentMarker = Boundary.Bottom;
 		this._selectionStart = null;
+		this._lineNumber = 0;
 	}
 
 	private _onEnter(): void {
@@ -120,6 +122,42 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 		this._selectLines(this._currentMarker, this._selectionStart);
 	}
 
+	public scrollToNextLine(scrollPosition: ScrollPosition = ScrollPosition.Top, retainSelection: boolean = false): void {
+		if (!retainSelection) {
+			this._selectionStart = null;
+		}
+
+		console.log(this._lineNumber);
+		this._xterm.scrollLines(1); 
+
+		let nextMarkerIndex;
+		if (this._currentMarker === Boundary.Bottom) {
+			nextMarkerIndex = this._xterm.markers.length;
+		} else if (this._currentMarker === Boundary.Top) {
+			nextMarkerIndex = 0;
+		} else {
+			nextMarkerIndex = this._xterm.markers.indexOf(this._currentMarker) + 1;
+		}
+
+		// this._lineNumber += 1;
+
+		// console.log("markerindex = "+nextMarkerIndex);
+		// console.log("line number = "+this._lineNumber);
+
+		// if (nextMarkerIndex >= this._xterm.markers.length) {
+		// 	this._currentMarker = Boundary.Bottom;
+		// 	this._xterm.scrollToBottom();
+		// 	return;
+		// }
+
+		// this._currentMarker = this._xterm.markers[nextMarkerIndex];
+
+		// console.log("markerline  = "+this._currentMarker.line);
+
+		// this._scrollToMarker(this._currentMarker, scrollPosition);
+	}
+
+
 	public selectToPreviousLine(): void {
 		if (this._selectionStart === null) {
 			this._selectionStart = this._currentMarker;
@@ -132,7 +170,7 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 		if (this._selectionStart === null) {
 			this._selectionStart = this._currentMarker;
 		}
-		this.scrollToNextCommand(ScrollPosition.Middle, true);
+		this.scrollToNextLine(ScrollPosition.Middle, true);
 		this._selectLines(this._currentMarker, this._selectionStart);
 	}
 
