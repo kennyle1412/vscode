@@ -87,6 +87,7 @@ export class TogglePanelPositionAction extends Action {
 	public static readonly LABEL = nls.localize('toggledPanelPosition', "Toggle Panel Position");
 	private static readonly MOVE_TO_RIGHT_LABEL = nls.localize('moveToRight', "Move to Right");
 	private static readonly MOVE_TO_BOTTOM_LABEL = nls.localize('moveToBottom', "Move to Bottom");
+	private static readonly MOVE_TO_LEFT_LABEL = nls.localize('moveToLeft', "Move to Left");
 	private toDispose: IDisposable[];
 
 	constructor(
@@ -99,8 +100,9 @@ export class TogglePanelPositionAction extends Action {
 		this.toDispose = [];
 		const setClassAndLabel = () => {
 			const positionRight = this.partService.getPanelPosition() === Position.RIGHT;
-			this.class = positionRight ? 'move-panel-to-bottom' : 'move-panel-to-right';
-			this.label = positionRight ? TogglePanelPositionAction.MOVE_TO_BOTTOM_LABEL : TogglePanelPositionAction.MOVE_TO_RIGHT_LABEL;
+			const positionLeft  = this.partService.getPanelPosition() === Position.LEFT;
+			this.class = positionRight ? 'move-panel-to-bottom' : positionLeft ? 'move-panel-to-right': 'move-panel-to=left';
+			this.label = positionRight ? TogglePanelPositionAction.MOVE_TO_BOTTOM_LABEL : positionLeft ? TogglePanelPositionAction.MOVE_TO_RIGHT_LABEL : TogglePanelPositionAction.MOVE_TO_LEFT_LABEL;
 		};
 		this.toDispose.push(partService.onEditorLayout(() => setClassAndLabel()));
 		setClassAndLabel();
@@ -108,7 +110,7 @@ export class TogglePanelPositionAction extends Action {
 
 	public run(): TPromise<any> {
 		const position = this.partService.getPanelPosition();
-		return this.partService.setPanelPosition(position === Position.BOTTOM ? Position.RIGHT : Position.BOTTOM);
+		return this.partService.setPanelPosition(position === Position.RIGHT ? Position.BOTTOM : position === Position.LEFT ? Position.RIGHT : Position.LEFT);
 	}
 
 	public dispose(): void {
