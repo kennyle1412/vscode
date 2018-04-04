@@ -101,7 +101,7 @@ export class TogglePanelPositionAction extends Action {
 		const setClassAndLabel = () => {
 			const positionRight = this.partService.getPanelPosition() === Position.RIGHT;
 			const positionLeft  = this.partService.getPanelPosition() === Position.LEFT;
-			this.class = positionRight ? 'move-panel-to-bottom' : positionLeft ? 'move-panel-to-right': 'move-panel-to=left';
+			this.class = positionRight ? 'move-panel-to-bottom' : positionLeft ? 'move-panel-to-right': 'move-panel-to-left';
 			this.label = positionRight ? TogglePanelPositionAction.MOVE_TO_BOTTOM_LABEL : positionLeft ? TogglePanelPositionAction.MOVE_TO_RIGHT_LABEL : TogglePanelPositionAction.MOVE_TO_LEFT_LABEL;
 		};
 		this.toDispose.push(partService.onEditorLayout(() => setClassAndLabel()));
