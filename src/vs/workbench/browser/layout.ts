@@ -626,10 +626,10 @@ export class WorkbenchLayout implements IVerticalSashLayoutProvider, IHorizontal
 				}
 			} else {
 				if (sidebarPosition === Position.LEFT) {
-					this.editor.getContainer().position(this.titlebarHeight, 0, this.statusbarHeight, sidebarSize.width + activityBarSize.width + panelDimension.width);
+					this.editor.getContainer().position(this.titlebarHeight, 0, this.statusbarHeight, sidebarSize.width + activityBarSize.width + panelWidth);
 					this.panel.getContainer().position(this.titlebarHeight, 0, this.statusbarHeight, sidebarSize.width + activityBarSize.width);
 				} else {
-					this.editor.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width, this.statusbarHeight, panelDimension.width);
+					this.editor.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width, this.statusbarHeight, panelWidth);
 					this.panel.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width + editorSize.width, this.statusbarHeight, 0);
 				}
 			}
