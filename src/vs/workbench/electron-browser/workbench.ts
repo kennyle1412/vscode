@@ -693,7 +693,7 @@ export class Workbench implements IPartService {
 	private setPanelPositionFromStorageOrConfig() {
 		const defaultPanelPosition = this.configurationService.getValue<string>(Workbench.defaultPanelPositionStorageKey);
 		const panelPosition = this.storageService.get(Workbench.panelPositionStorageKey, StorageScope.WORKSPACE, defaultPanelPosition);
-		this.panelPosition = (panelPosition === 'right') ? Position.RIGHT : Position.BOTTOM;
+		this.panelPosition = (panelPosition === 'right') ? Position.RIGHT : (panelPosition === 'bottom') ? Position.BOTTOM : Position.LEFT;
 	}
 
 	/**
@@ -961,8 +961,8 @@ export class Workbench implements IPartService {
 
 	public setPanelPosition(position: Position): TPromise<void> {
 		return (this.panelHidden ? this.setPanelHidden(false, true /* Skip Layout */) : TPromise.as(undefined)).then(() => {
-			const newPositionValue = (position === Position.BOTTOM) ? 'bottom' : 'right';
-			const oldPositionValue = (this.panelPosition === Position.BOTTOM) ? 'bottom' : 'right';
+			const newPositionValue = (position === Position.BOTTOM) ? 'bottom' : (position === Position.RIGHT) ? 'right': 'left';
+			const oldPositionValue = (this.panelPosition === Position.BOTTOM) ? 'bottom' : (this.panelPosition === Position.RIGHT) ? 'right': 'left';
 			this.panelPosition = position;
 			this.storageService.store(Workbench.panelPositionStorageKey, Position[this.panelPosition].toLowerCase(), StorageScope.WORKSPACE);
 
@@ -1246,7 +1246,7 @@ export class Workbench implements IPartService {
 	private createPanelPart(): void {
 		const panelPartContainer = $(this.workbench)
 			.div({
-				'class': ['part', 'panel', this.panelPosition === Position.BOTTOM ? 'bottom' : 'right'],
+				'class': ['part', 'panel', this.panelPosition === Position.BOTTOM ? 'bottom' : this.panelPosition === Position.RIGHT ? 'right' : 'left'],
 				id: Identifiers.PANEL_PART,
 				role: 'complementary'
 			});
