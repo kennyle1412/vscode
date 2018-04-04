@@ -616,12 +616,22 @@ export class WorkbenchLayout implements IVerticalSashLayoutProvider, IHorizontal
 				this.panel.getContainer().position(editorSize.height + this.titlebarHeight, sidebarSize.width, this.statusbarHeight, 0);
 			}
 		} else {
-			if (sidebarPosition === Position.LEFT) {
-				this.editor.getContainer().position(this.titlebarHeight, panelDimension.width, this.statusbarHeight, sidebarSize.width + activityBarSize.width);
-				this.panel.getContainer().position(this.titlebarHeight, 0, this.statusbarHeight, sidebarSize.width + activityBarSize.width + editorSize.width);
+			if (panelPosition === Position.RIGHT) {
+				if (sidebarPosition === Position.LEFT) {
+					this.editor.getContainer().position(this.titlebarHeight, panelDimension.width, this.statusbarHeight, sidebarSize.width + activityBarSize.width);
+					this.panel.getContainer().position(this.titlebarHeight, 0, this.statusbarHeight, sidebarSize.width + activityBarSize.width + editorSize.width);
+				} else {
+					this.editor.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width + panelWidth, this.statusbarHeight, 0);
+					this.panel.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width, this.statusbarHeight, editorSize.width);
+				}
 			} else {
-				this.editor.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width + panelWidth, this.statusbarHeight, 0);
-				this.panel.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width, this.statusbarHeight, editorSize.width);
+				if (sidebarPosition === Position.LEFT) {
+					this.editor.getContainer().position(this.titlebarHeight, 0, this.statusbarHeight, sidebarSize.width + activityBarSize.width + panelDimension.width);
+					this.panel.getContainer().position(this.titlebarHeight, 0, this.statusbarHeight, sidebarSize.width + activityBarSize.width);
+				} else {
+					this.editor.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width, this.statusbarHeight, panelDimension.width);
+					this.panel.getContainer().position(this.titlebarHeight, sidebarSize.width + activityBarSize.width + editorSize.width, this.statusbarHeight, 0);
+				}
 			}
 		}
 
