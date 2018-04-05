@@ -50,11 +50,7 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 		}
 	}
 
-	public scrollToPreviousCommand(scrollPosition: ScrollPosition = ScrollPosition.Top, retainSelection: boolean = false): void {
-		if (!retainSelection) {
-			this._selectionStart = null;
-		}
-
+	private _getPreviousCommandIndex(): number {
 		let markerIndex;
 		if (this._currentMarker === Boundary.Bottom) {
 			markerIndex = this._xterm.markers.length - 1;
@@ -64,6 +60,27 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 			markerIndex = this._xterm.markers.indexOf(this._currentMarker) - 1;
 		}
 
+		return markerIndex;
+	}
+
+	private _getNextCommandIndex(): number {
+		let markerIndex;
+		if (this._currentMarker === Boundary.Bottom) {
+			markerIndex = this._xterm.markers.length;
+		} else if (this._currentMarker === Boundary.Top) {
+			markerIndex = 0;
+		} else {
+			markerIndex = this._xterm.markers.indexOf(this._currentMarker) + 1;
+		}
+		return markerIndex;
+	}
+
+	public scrollToPreviousCommand(scrollPosition: ScrollPosition = ScrollPosition.Top, retainSelection: boolean = false): void {
+		if (!retainSelection) {
+			this._selectionStart = null;
+		}
+
+		let markerIndex = this._getPreviousCommandIndex();
 		if (markerIndex < 0) {
 			this._currentMarker = Boundary.Top;
 			this._xterm.scrollToTop();
@@ -79,15 +96,7 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 			this._selectionStart = null;
 		}
 
-		let markerIndex;
-		if (this._currentMarker === Boundary.Bottom) {
-			markerIndex = this._xterm.markers.length;
-		} else if (this._currentMarker === Boundary.Top) {
-			markerIndex = 0;
-		} else {
-			markerIndex = this._xterm.markers.indexOf(this._currentMarker) + 1;
-		}
-
+		let markerIndex = this._getNextCommandIndex();
 		if (markerIndex >= this._xterm.markers.length) {
 			this._currentMarker = Boundary.Bottom;
 			this._xterm.scrollToBottom();
@@ -129,52 +138,36 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 
 		console.log(this._lineNumber);
 		this._xterm.scrollLines(1); 
-
-		let nextMarkerIndex;
-		if (this._currentMarker === Boundary.Bottom) {
-			nextMarkerIndex = this._xterm.markers.length;
-		} else if (this._currentMarker === Boundary.Top) {
-			nextMarkerIndex = 0;
-		} else {
-			nextMarkerIndex = this._xterm.markers.indexOf(this._currentMarker) + 1;
-		}
-
-		// this._lineNumber += 1;
-
-		// console.log("markerindex = "+nextMarkerIndex);
-		// console.log("line number = "+this._lineNumber);
-
-		// if (nextMarkerIndex >= this._xterm.markers.length) {
-		// 	this._currentMarker = Boundary.Bottom;
-		// 	this._xterm.scrollToBottom();
-		// 	return;
-		// }
-
-		// this._currentMarker = this._xterm.markers[nextMarkerIndex];
-
-		// console.log("markerline  = "+this._currentMarker.line);
-
-		// this._scrollToMarker(this._currentMarker, scrollPosition);
 	}
 
+	public scrollToPreviousLine(scrollPosition: ScrollPosition = ScrollPosition.Top, retainSelection: boolean = false): void {
+		if (!retainSelection) {
+			this._selectionStart = null;
+		}
+
+		console.log(this._lineNumber);
+		this._xterm.scrollLines(1); 
+	}
 
 	public selectToPreviousLine(): void {
 		if (this._selectionStart === null) {
 			this._selectionStart = this._currentMarker;
 		}
-		this.scrollToPreviousCommand(ScrollPosition.Middle, true);
-		this._selectLines(this._currentMarker, this._selectionStart);
+		this._lineNumber -= 1;
+		// this.scrollToPreviousLine(ScrollPosition.Middle, true);
+		this._selectLines(this._currentMarker, this._selectionStart, this._lineNumber);
 	}
 
 	public selectToNextLine(): void {
 		if (this._selectionStart === null) {
 			this._selectionStart = this._currentMarker;
 		}
-		this.scrollToNextLine(ScrollPosition.Middle, true);
-		this._selectLines(this._currentMarker, this._selectionStart);
+		// this.scrollToNextLine(ScrollPosition.Middle, true);
+		this._lineNumber += 1;
+		this._selectLines(this._currentMarker, this._selectionStart, this._lineNumber);
 	}
 
-	private _selectLines(start: IMarker | Boundary, end: IMarker | Boundary | null): void {
+	private _selectLines(start: IMarker | Boundary, end: IMarker | Boundary | null, line: number = 0): void {
 		if (end === null) {
 			end = Boundary.Bottom;
 		}
@@ -190,7 +183,7 @@ export class TerminalCommandTracker implements ITerminalCommandTracker {
 
 		// Subtract a line as the marker is on the line the command run, we do not want the next
 		// command in the selection for the current command
-		endLine -= 1;
+		endLine -= 1 + line;
 
 		this._xterm.selectLines(startLine, endLine);
 	}
